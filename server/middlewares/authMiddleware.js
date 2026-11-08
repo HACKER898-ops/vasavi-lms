@@ -1,18 +1,16 @@
-import jwt from 'jsonwebtoken';
+import { getAuth } from '@clerk/express';
 import User from '../models/User.js';
 
-// Verify JWT token and attach userId to request
+// Verify the Clerk session and attach userId (the Clerk user id) to the request
 export const verifyToken = async (req, res, next) => {
     try {
-        const token = req.headers.authorization?.split(' ')[1];
+        const { userId } = getAuth(req);
 
-        if (!token) {
+        if (!userId) {
             return res.json({ success: false, message: 'No token provided' });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.userId = decoded.userId;
-        
+        req.userId = userId;
         next();
     } catch (error) {
         return res.json({ success: false, message: 'Invalid or expired token' });
@@ -20,10 +18,9 @@ export const verifyToken = async (req, res, next) => {
 };
 
 // Middleware (protect educator route)
-
-export const protectEducator = async(req,res, next) => {
+export const protectEducator = async (req, res, next) => {
     try {
-        const userId = req.userId
+        const userId = req.userId;
 
         if (!userId) {
             return res.json({ success: false, message: 'Authentication required' });
@@ -35,11 +32,13 @@ export const protectEducator = async(req,res, next) => {
             return res.json({ success: false, message: 'User not found' });
         }
 
-        // Allow all authenticated users to access educator features
-        // You can add role checking here if needed
-        next()
-
+        // Same as before: all authenticated users can access educator features.
+        next();
     } catch (error) {
-        return res.json({success: false, message:error.message})
+        return res.json({ success: false, message: error.message });
     }
-}
+};
+
+// Aliases used by the new server.js
+export const requireAuthUser = verifyToken;
+export const requireEducator = protectEducator;

@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "Edemy LMS - A Modern Learning Management System",
   "dependencies": {
+    "@clerk/express": "^2.1.88",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.5.1",
     "cookie-parser": "^1.4.7",
@@ -23,6 +24,7 @@
     "mongoose": "^8.20.1",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.1.9",
-    "stripe": "^17.6.0"
+    "stripe": "^17.6.0",
+    "svix": "^2.9.1"
   }
 }
