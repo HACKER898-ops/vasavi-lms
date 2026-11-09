@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { AppContext } from '../context/AppContext';
 import { assets } from '../assets/assets';
 
@@ -120,14 +119,11 @@ Course ${index + 1}:
                 return;
             }
 
-            const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+            const apiKey = import.meta.env.VITE_GROQ_API_KEY;
             
             if (!apiKey) {
-                throw new Error('Gemini API key not configured. Please add your API key to the .env file.');
+                throw new Error('Groq API key not configured. Please add your API key to the .env file.');
             }
-
-            const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: 'gemini-3.8-flash' });
 
             const coursesContext = prepareCoursesContext();
             
@@ -149,57 +145,73 @@ INSTRUCTIONS:
 
 Remember: You can only recommend courses from the list provided above. If someone asks about a course we don't offer, be honest and suggest similar alternatives from our catalog.`;
 
-            const chat = model.startChat({
-                history: messages
-                    .filter((msg) => msg.role !== 'assistant' || !msg.content.includes('Hello! 👋'))
-                    .map((msg) => ({
-                        role: msg.role === 'assistant' ? 'model' : 'user',
-                        parts: [{ text: msg.content }],
-                    })),
-                generationConfig: {
-                    maxOutputTokens: 500,
-                    temperature: 0.7,
-                },
-            });
+            const history = messages
+                .filter((msg) => msg.role !== 'assistant' || !msg.content.includes('Hello! 👋'))
+                .map((msg) => ({
+                    role: msg.role === 'assistant' ? 'assistant' : 'user',
+                    content: msg.content,
+                }));
+            let response;
 
-            const prompt = systemPrompt + '\n\nUser query: ' + inputMessage;
-            let result;
+            for (let attempt = 0; attempt < 2; attempt += 1) {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-            for (let attempt = 0; attempt < 3; attempt += 1) {
                 try {
-                    result = await chat.sendMessage(prompt);
+                    const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${apiKey}`,
+                        },
+                        body: JSON.stringify({
+                            model: 'llama-3.3-70b-versatile',
+                            messages: [
+                                { role: 'system', content: systemPrompt },
+                                ...history,
+                                { role: 'user', content: inputMessage },
+                            ],
+                            max_tokens: 500,
+                            temperature: 0.7,
+                        }),
+                        signal: controller.signal,
+                    });
+
+                    if (!groqResponse.ok) {
+                        const errorBody = await groqResponse.json().catch(() => ({}));
+                        throw new Error(errorBody.error?.message || `Groq request failed (${groqResponse.status}).`);
+                    }
+
+                    const data = await groqResponse.json();
+                    response = data.choices?.[0]?.message?.content;
+
+                    if (!response) {
+                        throw new Error('Groq returned an empty response.');
+                    }
+
                     break;
                 } catch (error) {
-                    const isTemporaryCapacityError = error?.message?.includes('[503]');
+                    const isTemporaryCapacityError = error?.message?.includes('429') ||
+                        error?.message?.toLowerCase().includes('rate limit');
 
-                    if (!isTemporaryCapacityError || attempt === 2) {
-                        if (isTemporaryCapacityError) {
-                            setMessages((prev) => [
-                                ...prev,
-                                {
-                                    role: 'assistant',
-                                    content: `Gemini is temporarily busy. Here are the courses currently available:\n\n${getCourseCatalogResponse()}`,
-                                },
-                            ]);
-                            return;
-                        }
-
+                    if (!isTemporaryCapacityError || attempt === 1) {
                         throw error;
                     }
 
-                    await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                } finally {
+                    clearTimeout(timeoutId);
                 }
             }
 
-            const response = await result.response;
             const botMessage = {
                 role: 'assistant',
-                content: response.text(),
+                content: response,
             };
 
             setMessages((prev) => [...prev, botMessage]);
         } catch (error) {
-            console.error('Error calling Gemini API:', error);
+            console.error('Error calling Groq API:', error);
             const errorMessage = {
                 role: 'assistant',
                 content: `I apologize, but I'm having trouble connecting right now. ${error.message || 'Please try again later.'} 
@@ -263,7 +275,7 @@ In the meantime, feel free to browse all our ${allCourses.length} available cour
                             </div>
                             <div>
                                 <h3 className="font-semibold">Course Assistant</h3>
-                                <p className="text-xs text-blue-100">Powered by Gemini AI</p>
+                                <p className="text-xs text-blue-100">Powered by Groq AI</p>
                             </div>
                         </div>
                         <button
