@@ -11,7 +11,7 @@
   "keywords": [],
   "author": "gyan",
   "license": "ISC",
-  "description": "Edemy LMS - A Modern Learning Management System",
+  "description": "Vasavi LMS - A Modern Learning Management System",
   "dependencies": {
     "@clerk/express": "^2.1.88",
     "bcryptjs": "^3.0.3",

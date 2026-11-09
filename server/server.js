@@ -26,7 +26,7 @@ app.post('/clerk', express.raw({ type: 'application/json' }), clerkWebhooks)
 app.post('/stripe', express.raw({ type: 'application/json' }), stripeWebhooks)
 
 // Routes
-app.get('/', (req, res) => { res.send('Edemy API is working fine!') })
+app.get('/', (req, res) => { res.send('Vasavi API is working fine!') })
 app.use('/api/educator', express.json(), requireAuthUser, requireEducator, educatorRouter)
 app.use('/api/course', express.json(), courseRouter)
 app.use('/api/user', express.json(), requireAuthUser, userRouter)

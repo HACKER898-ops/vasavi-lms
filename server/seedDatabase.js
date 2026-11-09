@@ -24,21 +24,21 @@ const seedData = {
         {
             _id: "user_educator_001",
             name: "Dr. Sarah Johnson",
-            email: "sarah.johnson@edemy.com",
+            email: "sarah.johnson@Vasavi.com",
             imageUrl: "https://i.pravatar.cc/150?img=1",
             enrolledCourses: []
         },
         {
             _id: "user_educator_002",
             name: "Prof. Michael Chen",
-            email: "michael.chen@edemy.com",
+            email: "michael.chen@Vasavi.com",
             imageUrl: "https://i.pravatar.cc/150?img=2",
             enrolledCourses: []
         },
         {
             _id: "user_educator_003",
             name: "Dr. Emily Rodriguez",
-            email: "emily.rodriguez@edemy.com",
+            email: "emily.rodriguez@Vasavi.com",
             imageUrl: "https://i.pravatar.cc/150?img=3",
             enrolledCourses: []
         },

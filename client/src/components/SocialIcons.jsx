@@ -42,7 +42,7 @@ const SocialIcons = () => {
       </Link>
       <Link 
         target='_blank' 
-        to='https://github.com/Gyanthakur/Edemy-LMS'
+        to='https://github.com/Gyanthakur/Vasavi-LMS'
         className="group transition transform hover:scale-110 text-[#e01d1d] hover:text-red-600"
       >
         <GitBranch size={34} weight="fill" className="transition-colors duration-300" />

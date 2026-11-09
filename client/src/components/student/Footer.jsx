@@ -22,7 +22,7 @@ const Footer = () => {
 				<div className="flex flex-col md:items-start items-center w-full">
 					<img src={assets.logo_dark} alt="logo" />
 					<p className="mt-6 text-center sm:flex sm:flex-row sm:justify-center  md:text-left text-sm text-white/80">
-						Edemy LMS makes education accessible and engaging, connecting
+						Vasavi LMS makes education accessible and engaging, connecting
 						students with educators through quality courses, interactive tools,
 						and intuitive design.
 					</p>
@@ -73,7 +73,7 @@ const Footer = () => {
 				</div>
 			</div>
 			<p className="py-4 text-center text-xs md:text-sm text-white/60">
-				Copyright 2025 © Edemy by GPS. All Right Reserved.
+				Copyright 2025 © Vasavi by GPS. All Right Reserved.
 			</p>
 		</footer>
 	);

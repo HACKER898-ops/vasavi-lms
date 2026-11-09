@@ -86,7 +86,7 @@ Course ${index + 1}:
 
             const coursesContext = prepareCoursesContext();
             
-            const systemPrompt = `You are a helpful and friendly course advisor for an online learning platform called Edemy LMS. Your role is to help students find the best courses based on their needs, interests, and goals.
+            const systemPrompt = `You are a helpful and friendly course advisor for an online learning platform called Vasavi LMS. Your role is to help students find the best courses based on their needs, interests, and goals.
 
 AVAILABLE COURSES:
 ${coursesContext}

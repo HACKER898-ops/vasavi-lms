@@ -6,7 +6,7 @@ export default function PrivacyPolicy() {
     <main className="min-h-screen bg-gradient-to-b from-cyan-100/70 to-white flex items-start py-16 px-6 md:px-12">
       <section className="w-full max-w-4xl mx-auto bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-12 border border-gray-100">
         <header className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
-          <img src={assets.logo || assets.sketch} alt="Edemy logo" className="w-12 h-12 md:w-14 md:h-14 rounded-md" />
+          <img src={assets.logo || assets.sketch} alt="Vasavi logo" className="w-12 h-12 md:w-14 md:h-14 rounded-md" />
 
           <div className="flex-1">
             <h1 className="md:text-home-heading-large text-home-heading-small font-extrabold text-gray-800 leading-tight">Privacy Policy</h1>
@@ -20,7 +20,7 @@ export default function PrivacyPolicy() {
         </header>
 
         <div className="mt-8 space-y-6 text-gray-700">
-          <p className="text-base">Edemy LMS (<span className="font-semibold">"we"</span>, <span className="font-semibold">"us"</span>, or <span className="font-semibold">"our"</span>) cares about your privacy. This policy explains what information we collect, why we collect it, and how you can manage it. We kept the language simple and aligned styles with the Hero section for visual consistency.</p>
+          <p className="text-base">Vasavi LMS (<span className="font-semibold">"we"</span>, <span className="font-semibold">"us"</span>, or <span className="font-semibold">"our"</span>) cares about your privacy. This policy explains what information we collect, why we collect it, and how you can manage it. We kept the language simple and aligned styles with the Hero section for visual consistency.</p>
 
           <div className="grid md:grid-cols-2 gap-6">
             <div className="p-4 bg-blue-50/60 rounded-xl border border-blue-100">
