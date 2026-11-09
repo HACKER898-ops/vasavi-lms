@@ -151,6 +151,29 @@ Remember: You can only recommend courses from the list provided above. If someon
                     role: msg.role === 'assistant' ? 'assistant' : 'user',
                     content: msg.content,
                 }));
+            const modelsResponse = await fetch('https://api.groq.com/openai/v1/models', {
+                headers: { Authorization: `Bearer ${apiKey}` },
+            });
+
+            if (!modelsResponse.ok) {
+                throw new Error(`Unable to load available Groq models (${modelsResponse.status}).`);
+            }
+
+            const modelsData = await modelsResponse.json();
+            const availableModels = modelsData.data?.map((model) => model.id) || [];
+            const preferredModels = [
+                import.meta.env.VITE_GROQ_MODEL,
+                'openai/gpt-oss-120b',
+                'openai/gpt-oss-20b',
+                'llama-3.3-70b-versatile',
+                'llama-3.1-8b-instant',
+            ].filter(Boolean);
+            const model = preferredModels.find((modelId) => availableModels.includes(modelId));
+
+            if (!model) {
+                throw new Error('No supported chat model is available for this Groq API key.');
+            }
+
             let response;
 
             for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -165,7 +188,7 @@ Remember: You can only recommend courses from the list provided above. If someon
                             Authorization: `Bearer ${apiKey}`,
                         },
                         body: JSON.stringify({
-                            model: 'llama-3.1-8b-instant',
+                            model,
                             messages: [
                                 { role: 'system', content: systemPrompt },
                                 ...history,
