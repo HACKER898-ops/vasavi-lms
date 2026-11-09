@@ -165,7 +165,7 @@ Remember: You can only recommend courses from the list provided above. If someon
                             Authorization: `Bearer ${apiKey}`,
                         },
                         body: JSON.stringify({
-                            model: 'llama-3.3-70b-versatile',
+                            model: 'llama-3.1-8b-instant',
                             messages: [
                                 { role: 'system', content: systemPrompt },
                                 ...history,
