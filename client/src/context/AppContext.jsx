@@ -26,6 +26,7 @@ export const AppContextProvider = (props) => {
     const { signOut } = useClerk();
 
     const [allCourses, setAllCourses] = useState([]);
+    const [isCoursesLoading, setIsCoursesLoading] = useState(true);
     const [isEducator, setIsEducator] = useState(false);
     const [enrolledCourses, setEnrolledCourses] = useState([]);
     const [userData, setUserData] = useState(null);
@@ -62,6 +63,8 @@ export const AppContextProvider = (props) => {
             }
         } catch (error) {
             toast.error(error.message);
+        } finally {
+            setIsCoursesLoading(false);
         }
     };
 
@@ -164,7 +167,7 @@ export const AppContextProvider = (props) => {
     }, [isSignedIn, clerkUser?.id]);
 
     const value = {
-        currency, allCourses, navigate, isEducator, setIsEducator,
+        currency, allCourses, isCoursesLoading, navigate, isEducator, setIsEducator,
         calculateRating, calculateChapterTime, calculateCourseDuration, calculateNoOfLectures,
         fetchUserEnrolledCourses, setEnrolledCourses, enrolledCourses, backendUrl,
         userData, setUserData, getToken, fetchAllCourses,

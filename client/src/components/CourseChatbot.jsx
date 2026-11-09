@@ -9,7 +9,7 @@ const CourseChatbot = () => {
     const [inputMessage, setInputMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
-    const { allCourses, currency } = useContext(AppContext);
+    const { allCourses, currency, isCoursesLoading } = useContext(AppContext);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -24,9 +24,9 @@ const CourseChatbot = () => {
             setMessages([
                 {
                     role: 'assistant',
-                    content: `Hello! 👋 I'm your course guide assistant. I can help you find the perfect course based on your interests, skill level, and career goals. 
+                    content: `Hello! 👋 I'm your course guide assistant. I can help you find the perfect course based on your interests, skill level, and career goals.
 
-I have information about ${allCourses.length} courses available on our platform. How can I help you today?
+${isCoursesLoading ? 'I am loading the course catalog now.' : `I have information about ${allCourses.length} courses available on our platform.`} How can I help you today?
 
 You can ask me things like:
 • "What courses do you offer?"
@@ -36,7 +36,7 @@ You can ask me things like:
                 },
             ]);
         }
-    }, [isOpen, allCourses.length]);
+    }, [isOpen, allCourses.length, isCoursesLoading]);
 
     const prepareCoursesContext = () => {
         if (!allCourses || allCourses.length === 0) {
@@ -75,6 +75,28 @@ Course ${index + 1}:
         setIsLoading(true);
 
         try {
+            if (isCoursesLoading) {
+                setMessages((prev) => [
+                    ...prev,
+                    {
+                        role: 'assistant',
+                        content: 'The course catalog is still loading. Please try your question again in a moment.',
+                    },
+                ]);
+                return;
+            }
+
+            if (allCourses.length === 0) {
+                setMessages((prev) => [
+                    ...prev,
+                    {
+                        role: 'assistant',
+                        content: 'There are currently no published courses available to recommend. Please check the course catalog again later.',
+                    },
+                ]);
+                return;
+            }
+
             const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
             
             if (!apiKey) {
