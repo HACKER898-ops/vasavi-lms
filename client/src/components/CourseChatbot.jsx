@@ -66,6 +66,17 @@ Course ${index + 1}:
         return coursesInfo;
     };
 
+    const getCourseCatalogResponse = () => {
+        const courseNames = allCourses.map((course) => {
+            const description = course.courseDescription
+                ? ` - ${course.courseDescription}`
+                : '';
+            return `• ${course.courseTitle}${description}`;
+        }).join('\n');
+
+        return `We currently offer these courses:\n\n${courseNames}`;
+    };
+
     const handleSendMessage = async () => {
         if (!inputMessage.trim()) return;
 
@@ -93,6 +104,18 @@ Course ${index + 1}:
                         role: 'assistant',
                         content: 'There are currently no published courses available to recommend. Please check the course catalog again later.',
                     },
+                ]);
+                return;
+            }
+
+            const normalizedInput = inputMessage.toLowerCase();
+            const asksForCatalog = normalizedInput.includes('what') &&
+                (normalizedInput.includes('course') || normalizedInput.includes('offer'));
+
+            if (asksForCatalog) {
+                setMessages((prev) => [
+                    ...prev,
+                    { role: 'assistant', content: getCourseCatalogResponse() },
                 ]);
                 return;
             }
@@ -150,6 +173,17 @@ Remember: You can only recommend courses from the list provided above. If someon
                     const isTemporaryCapacityError = error?.message?.includes('[503]');
 
                     if (!isTemporaryCapacityError || attempt === 2) {
+                        if (isTemporaryCapacityError) {
+                            setMessages((prev) => [
+                                ...prev,
+                                {
+                                    role: 'assistant',
+                                    content: `Gemini is temporarily busy. Here are the courses currently available:\n\n${getCourseCatalogResponse()}`,
+                                },
+                            ]);
+                            return;
+                        }
+
                         throw error;
                     }
 
