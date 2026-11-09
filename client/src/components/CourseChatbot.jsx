@@ -77,7 +77,7 @@ Course ${index + 1}:
         try {
             const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
             
-            if (!apiKey || apiKey === 'your_gemini_api_key_here') {
+            if (!apiKey) {
                 throw new Error('Gemini API key not configured. Please add your API key to the .env file.');
             }
 
