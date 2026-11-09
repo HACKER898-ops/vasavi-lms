@@ -9,20 +9,28 @@ const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 // ---------- Clerk webhook ----------
 export const clerkWebhooks = async (req, res) => {
     try {
+        const payload = Buffer.isBuffer(req.body)
+            ? req.body.toString("utf8")
+            : typeof req.body === "string"
+                ? req.body
+                : JSON.stringify(req.body);
+
         const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
-        const { type, data } = wh.verify(req.body, {
+        const evt = wh.verify(payload, {
             "svix-id": req.headers["svix-id"],
             "svix-timestamp": req.headers["svix-timestamp"],
             "svix-signature": req.headers["svix-signature"],
         });
 
+        const { type, data } = evt;
+
         if (type === "user.created" || type === "user.updated") {
             await User.findByIdAndUpdate(
                 data.id,
                 {
-                    email: data.email_addresses[0].email_address,
+                    email: data.email_addresses?.[0]?.email_address || "",
                     name: `${data.first_name || ""} ${data.last_name || ""}`.trim() || "User",
-                    imageUrl: data.image_url,
+                    imageUrl: data.image_url || "https://img.clerk.com/preview.png",
                 },
                 { upsert: true, new: true }
             );
@@ -32,6 +40,7 @@ export const clerkWebhooks = async (req, res) => {
 
         res.json({ success: true });
     } catch (err) {
+        console.error("Clerk webhook error:", err.message);
         res.status(400).json({ success: false, message: err.message });
     }
 };

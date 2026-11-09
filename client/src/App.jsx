@@ -24,20 +24,17 @@ import CourseChatbot from './components/CourseChatbot'
 
 const App = () => {
 
-
   const isEducatorRoute = useMatch('/educator/*')
-
-
 
   return (
     <div className='text-default min-h-screen bg-white'>
       <ToastContainer />
-      {!isEducatorRoute &&<Navbar/> }
-      
+      {!isEducatorRoute && <Navbar />}
+
       <Routes>
         <Route path='/' element={<Home/>} />
-        <Route path='/login' element={<Login/>} />
-        <Route path='/signup' element={<Signup/>} />
+        <Route path='/login/*' element={<Login/>} />
+        <Route path='/signup/*' element={<Signup/>} />
         <Route path='/course-list' element={<CoursesList/>} />
         <Route path='/course-list/:input' element={<CoursesList/>} />
         <Route path='/course/:id' element={<CourseDetails/>} />
@@ -49,8 +46,7 @@ const App = () => {
         <Route path='/contact' element={<ContactForm/>} />
         <Route path='/privacy-policy' element={<PrivacyPolicy/>} />
 
-
-        <Route path='/educator' element={ <Educator />} >
+        <Route path='/educator' element={<Educator />} >
             <Route path='/educator' element={<Dashboard />} />
             <Route path='add-course' element={<AddCourse />} />
             <Route path='my-courses' element={<MyCourses />} />
