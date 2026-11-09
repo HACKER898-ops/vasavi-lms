@@ -117,7 +117,24 @@ Remember: You can only recommend courses from the list provided above. If someon
                 },
             });
 
-            const result = await chat.sendMessage(systemPrompt + '\n\nUser query: ' + inputMessage);
+            const prompt = systemPrompt + '\n\nUser query: ' + inputMessage;
+            let result;
+
+            for (let attempt = 0; attempt < 3; attempt += 1) {
+                try {
+                    result = await chat.sendMessage(prompt);
+                    break;
+                } catch (error) {
+                    const isTemporaryCapacityError = error?.message?.includes('[503]');
+
+                    if (!isTemporaryCapacityError || attempt === 2) {
+                        throw error;
+                    }
+
+                    await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+                }
+            }
+
             const response = await result.response;
             const botMessage = {
                 role: 'assistant',
