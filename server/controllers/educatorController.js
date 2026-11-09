@@ -1,3 +1,4 @@
+import { clerkClient } from '@clerk/express'
 import Course from '../models/Course.js'
 import {v2 as cloudinary} from 'cloudinary'
 import { Purchase } from '../models/Purchase.js'
@@ -5,16 +6,14 @@ import User from '../models/User.js'
 
 
 // Update role to educator (simplified - no longer needed but kept for compatibility)
-export const updateRoleToEducator = async (req,res)=>{
+export const updateRoleToEducator = async (req, res) => {
     try {
-        const userId = req.userId
-
-        // Simply return success - all users can be educators
-        res.json({success: true, message: 'You can publish a course now'})
-
-
+        await clerkClient.users.updateUserMetadata(req.userId, {
+            publicMetadata: { role: 'educator' },
+        })
+        res.json({ success: true, message: 'You can publish a course now' })
     } catch (error) {
-        res.json({success: false, message:error.message})
+        res.json({ success: false, message: error.message })
     }
 }
 
