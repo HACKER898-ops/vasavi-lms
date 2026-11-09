@@ -9,6 +9,10 @@ const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 // ---------- Clerk webhook ----------
 export const clerkWebhooks = async (req, res) => {
     try {
+        if (!process.env.CLERK_WEBHOOK_SECRET) {
+            throw new Error("CLERK_WEBHOOK_SECRET is not set");
+        }
+
         const payload = Buffer.isBuffer(req.body)
             ? req.body.toString("utf8")
             : typeof req.body === "string"
@@ -16,13 +20,16 @@ export const clerkWebhooks = async (req, res) => {
                 : JSON.stringify(req.body);
 
         const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
-        const evt = wh.verify(payload, {
+
+        // Throws if the signature is invalid
+        wh.verify(payload, {
             "svix-id": req.headers["svix-id"],
             "svix-timestamp": req.headers["svix-timestamp"],
             "svix-signature": req.headers["svix-signature"],
         });
 
-        const { type, data } = evt;
+        // Parse the verified payload ourselves
+        const { type, data } = JSON.parse(payload);
 
         if (type === "user.created" || type === "user.updated") {
             await User.findByIdAndUpdate(
